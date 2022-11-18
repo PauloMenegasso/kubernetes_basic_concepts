@@ -1,0 +1,28 @@
+#Stores non-confidential data
+#pods can consume ConfigMaps
+#Decouples environment specific variables from the application
+#Config map does not have spec, but it has DATA and BINARYDATA, stored as key-value pairs
+#Data contains UTF-8 strings
+#BinaryData contains base64-encoded strings
+#Data and BinaryData must not overlap
+#An immutable field must be added to ensure properties are not mutable
+#A pod container can relate to a configmap. They must be in the same namespace
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: demo
+#property like keys (Pegar por container)
+data:
+  name: "Paulo"
+  age: "32"
+#File-like keys (Pegar por volume)
+  person.properties: |
+    document.types=CPF,CNPJ
+    address.number=390
+  user-interface.properties: |
+    color.good=green
+    color.bad=yellow
+    allow.textmode=true
+immutable: true
+

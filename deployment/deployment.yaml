@@ -1,0 +1,47 @@
+#Provide declarative updates for replicaSets and Pods
+#k8s compares the actual state with the desired state. them, the deployment control updates the state, if needed
+
+###Use Cases:
+  #Rollout a Replica set
+  #Declare a new pod state
+  #Rollback to an earlier deployment version
+  #Scale up to support more load
+  #pause a rollout
+  #Clean up old replica sets
+
+#After finish, the deployent status may be consulted to ensure it worked or not
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deployment-test
+  labels: 
+    app: nginx
+spec:
+  replicas: 3 ##number of pods
+  selector: ##Defines the pod the deployment will search for
+####!!!!!COUTION: do not overlap selectors!!!!!
+    matchLabels:
+      app: nginx
+  template: ##Countains the pod specs
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.14.2
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 8080
+
+##Deployments garantee uptime when updating the pods. The new ones will be created and them the old ones are removed
+##It`s not good to update the selector! (in some api versions it's even immutable)
+
+##Rollouts and rollbacks are stored in deployment history, making ease to switch between versions
+##check for specific commands in https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
+
+##Scaling up and down can be made through spec.replicas prop. It will create the desired number of replica sets

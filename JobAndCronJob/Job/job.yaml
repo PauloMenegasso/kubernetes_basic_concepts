@@ -1,0 +1,39 @@
+#Creates one or more pods and will continue creating while a certain number of them successfully finishes
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: example
+spec:
+  template:
+    spec:
+      completions: 5 ##Number of successful pods executed
+      paralelism: 2 ##Number of pods running in parallel
+      backoffLimit: 5 ##Number of errors that can happen on a pod in this job -> failed pods are created with a exponential delay
+      activeDeadlineSeconds: 3000 ##Defines the maximum time the job remain running
+      ttlSecondsAfterFinished: 100 ##Deletes the job after its completion of failure
+      suspend: false ##May be updated to suspend the job
+      containers:
+      - name: Job
+        image: perl
+        command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(2000)"]
+      restartPolicy: Never
+
+#There are three tasks where we can use jobs:
+#1 non-parallel jobs
+#2 parallel jobs with fixed completion count (must specify the completions)
+#3 parallel jobs with a work queue: (do not specify completions. )
+
+
+##Controlling parallelism:
+# Actual number of pods running may vary due to unexpected issues with the pod
+# About spec.completionMode:
+  # default is NonIndexed: each completed pod is counted as the same
+  # Indexed. Pods of the job get and index. The job is considered completed when there is one succeded execution for each pod in the job.
+
+##Handling Failure:
+# The pod can restart if the spec.restartPolicy is set to "OnFailure", but if it is set to "Never", a new pod will be created to execute the job.
+
+##When the job finished, the pods are not deleted!
+##The job is not deleted as well, and we can see it`s status
+##Finalized jobs may be consuming space, however, one can automatically delete them using spec.ttlSecondsAfterFinished

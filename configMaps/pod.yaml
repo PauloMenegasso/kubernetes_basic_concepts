@@ -1,0 +1,48 @@
+##There are four different ways to consume the ConfigMaps inside a pod
+  #Inside a container commands and args
+  #Env variables for a container
+  #Add a file in a read-only volume for the application to read
+  #Write code to run inside the Pod that uses k8s API to read the configmap
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: configmap-demo
+spec:
+  containers:
+  - name: demo
+    image: alpine
+    command: ["sleep", "3600"]
+    ##Read from container
+    env:
+      - name: NAME
+        valueFrom:
+          configMapKeyRef:
+            name: demo
+            key: name
+      - name: AGE
+        valueFrom:
+          configMapKeyRef:
+            name: demo
+            key: age
+    volumeMounts:
+      - name: config
+        mountPath: "/config"
+        readOnly: true
+    resources:
+      limits:
+        memory: "128Mi"
+        cpu: "500m"
+    ports:
+      - containerPort: 8080
+  ##Passando valor por volume
+  volumes:
+    - name: config
+      configMap:
+        name: demo
+        items:
+        - key: "person.properties"
+          path: "person.properties"
+        - key: "user-interface.properties"
+          path: "user-interface.properties"
+        

@@ -1,0 +1,23 @@
+##Created a job on a repeating schedule
+#Runs periodicaly on a cron schedule
+#Times are based on the timezone of the kube-controller-manager!!!!!!
+
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: cronJob
+spec:
+  schedule: "2 * * * *"
+    jobTemplate:
+      spec:
+        template:
+          spec:
+            containers:
+            - name: Job
+              image: perl
+              imagePullPolicy: "IfNotPresent"
+              command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(2000)"]
+            restartPolicy: "OnFailure"
+
+
+##CronJobs creates one Job upon their execution, however, sometimes it can create two jobs (Bug??), therefore, the jobs must be idempotent
