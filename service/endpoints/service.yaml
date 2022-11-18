@@ -1,0 +1,15 @@
+##Serices without selectors
+##Uses endpointSlices. In this way, the service can abstract other kinds of backend. Even if they run outside the cluster
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-service
+spec:
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 9376
+
+##For such server, the endpointSlices are not created automatically
+##one must manually map the service to the network address and port where it`s running.

@@ -18,6 +18,7 @@ metadata:
   labels: 
     app: nginx
 spec:
+  progressDeadlineSeconds: 600 ##Make the controller report lack of progress in the deploy after 10 minutes
   replicas: 3 ##number of pods
   selector: ##Defines the pod the deployment will search for
 ####!!!!!COUTION: do not overlap selectors!!!!!
@@ -45,3 +46,20 @@ spec:
 ##check for specific commands in https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
 
 ##Scaling up and down can be made through spec.replicas prop. It will create the desired number of replica sets
+
+##Autoscaling can be done by the command:
+# kubectl autoscale deployment/nginx-deployment --min=10 --max=15 --cpu-percent=80
+
+####DEPLOYMENT LIFECYLCE
+#Creates new replica sets
+#Scale up the newest RS
+#Scale down the old RS
+#New pods get read or available
+
+###Reasons for failure on deployment
+# Insuficcient quota
+# Readiness probe failure
+# Image pull error
+# Insuficient permissions
+# Limit Ranges
+# Application misconfig

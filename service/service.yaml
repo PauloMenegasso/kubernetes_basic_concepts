@@ -1,0 +1,26 @@
+##Exposes an application in a pod as a network service
+#K8s gives pods its own IP address and a single DNS.
+#If there is more than one pod, the load balancer also may start
+#Generaly, the pods in the service will be defined by de selector
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: alpine
+spec:
+  clusterIP: 1.1.1.1 ##Defines the external cluster IP. Can be used if you aready have a DNS
+  externalTrafficPolicy: Cluster ## Cluster (route external traffic to all ready endpoints) | Local (only accepts traffic from node-locals)
+  internalTrafficPolicy: Cluster ## Cluster (route internal traffic to all ready endpoints) | Local (only accepts traffic from node-locals)
+  type: LoadBalancer ##See publishingServices.md
+  selector:
+    app: alpine
+  ports:
+  - name: http
+    protocol: TCP
+    port: 8080 ##Exposed port on the service (ServiceIP:port)
+    targetPort: 9090 ##K8s port in which the pod is running
+##Multiporting: A service may also expose more than one type of pods. One just need to add more objets in port:
+  - name: https
+    protocol: TCP
+    port: 443
+    targetPort: 9091
